@@ -41,6 +41,7 @@ type LogConfig struct {
 	// Error is the path to the error log file.
 	Error string `json:"error,omitempty"`
 	// Loglevel sets the logging verbosity: debug, info, warning, error, none.
+	// Personal note: I prefer "warning" as default to reduce noise in logs.
 	Loglevel string `json:"loglevel,omitempty"`
 }
 
@@ -50,7 +51,7 @@ type InboundConfig struct {
 	Tag string `json:"tag,omitempty"`
 	// Port is the port number to listen on.
 	Port int `json:"port"`
-	// Listen is the IP address to listen on.
+	// Listen is the IP address to listen on. Defaults to 127.0.0.1 for security.
 	Listen string `json:"listen,omitempty"`
 	// Protocol is the inbound proxy protocol (e.g. vmess, socks, http).
 	Protocol string `json:"protocol"`
@@ -83,61 +84,4 @@ type DNSConfig struct {
 // RoutingConfig defines traffic routing rules.
 type RoutingConfig struct {
 	// DomainStrategy controls how domain names are resolved for routing.
-	DomainStrategy string `json:"domainStrategy,omitempty"`
-	// Rules is a list of routing rules.
-	Rules []json.RawMessage `json:"rules,omitempty"`
-}
-
-// SniffingConfig controls traffic sniffing behavior on an inbound.
-type SniffingConfig struct {
-	// Enabled turns sniffing on or off.
-	Enabled bool `json:"enabled"`
-	// DestOverride lists protocols whose destination should be overridden.
-	DestOverride []string `json:"destOverride,omitempty"`
-}
-
-// DetectConfigFormat infers the configuration format from the file extension.
-func DetectConfigFormat(path string) (ConfigFormat, error) {
-	ext := strings.ToLower(filepath.Ext(path))
-	switch ext {
-	case ".json", ".jsonc":
-		return ConfigFormatJSON, nil
-	case ".toml":
-		return ConfigFormatTOML, nil
-	case ".yaml", ".yml":
-		return ConfigFormatYAML, nil
-	default:
-		return ConfigFormatJSON, fmt.Errorf("unknown config file extension: %s, defaulting to JSON", ext)
-	}
-}
-
-// LoadConfigFromFile reads and parses a configuration file into a Config struct.
-// Currently supports JSON format; TOML and YAML support may be added in future.
-func LoadConfigFromFile(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
-	}
-
-	format, err := DetectConfigFormat(path)
-	if err != nil {
-		// Log warning but continue with JSON default
-		fmt.Fprintf(os.Stderr, "Warning: %v\n", err)
-	}
-
-	switch format {
-	case ConfigFormatJSON:
-		return parseJSONConfig(data)
-	default:
-		return nil, fmt.Errorf("config format not yet supported, please use JSON")
-	}
-}
-
-// parseJSONConfig unmarshals raw JSON bytes into a Config struct.
-func parseJSONConfig(data []byte) (*Config, error) {
-	var cfg Config
-	if err := json.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON config: %w", err)
-	}
-	return &cfg, nil
-}
+	DomainStrategy string `json:"domai
