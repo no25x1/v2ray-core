@@ -52,6 +52,7 @@ type InboundConfig struct {
 	// Port is the port number to listen on.
 	Port int `json:"port"`
 	// Listen is the IP address to listen on. Defaults to 127.0.0.1 for security.
+	// Personal note: keeping this as 127.0.0.1 only; never expose to 0.0.0.0 on untrusted networks.
 	Listen string `json:"listen,omitempty"`
 	// Protocol is the inbound proxy protocol (e.g. vmess, socks, http).
 	Protocol string `json:"protocol"`
@@ -82,6 +83,4 @@ type DNSConfig struct {
 }
 
 // RoutingConfig defines traffic routing rules.
-type RoutingConfig struct {
-	// DomainStrategy controls how domain names are resolved for routing.
-	DomainStrategy string `json:"domai
+type RoutingConfig struc
