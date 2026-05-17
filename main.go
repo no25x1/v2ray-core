@@ -61,9 +61,11 @@ func getConfigFilePath() cmdarg.Arg {
 	}
 
 	// try to find config in default locations
+	// also check ~/.v2ray/config.json as a personal convenience
 	defaultPaths := []string{
 		platform.GetConfigurationPath(),
 		filepath.Join(".", "config.json"),
+		filepath.Join(os.Getenv("HOME"), ".v2ray", "config.json"),
 	}
 	for _, p := range defaultPaths {
 		if fileExists(p) {
@@ -131,10 +133,4 @@ func main() {
 }
 
 func printVersion() {
-	version := core.VersionStatement()
-	for _, s := range version {
-		fmt.Println(s)
-	}
-	fmt.Printf("Go runtime: %s\n", runtime.Version())
-	fmt.Printf("OS/Arch: %s/%s\n", runtime.GOOS, runtime.GOARCH)
-}
+	ver
